@@ -3,9 +3,14 @@ package com.elg.vshop.service;
 import com.elg.vshop.dao.AccountRepository;
 import com.elg.vshop.dao.RoleRepository;
 import com.elg.vshop.entity.user.Account;
+import com.elg.vshop.entity.user.Role;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class AccountServiceImpl implements AccountService {
@@ -24,6 +29,10 @@ public class AccountServiceImpl implements AccountService {
     public void save(Account account) {
         if(!emailExist(account.getEmail())) {
             account.setPassword(bCryptPasswordEncoder.encode(account.getPassword()));
+            // It'a simple implementation. You can add a Roles drop-down on Create Account Page,
+            // populate it with all the roles u have in database. When user select 1 role,
+            // click submit, in UserServiceImp find that role in database instead of roleRepository.findAll
+
             accountRepository.save(account);
         } else
             throw new RuntimeException("Account with email " + account.getEmail() + " already exist");
@@ -32,6 +41,30 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public Account findByEmail(String email) {
         return accountRepository.findByEmail(email);
+    }
+
+    @Override
+    public void updateAccount(int id, Account account) {
+        Optional<Account> result = accountRepository.findById(id);
+        Account existingAccount = null;
+        if(result.isPresent()) {
+            existingAccount = result.get();
+        } else {
+            throw new RuntimeException("Account not Found");
+        }
+        if(!account.getEmail().equals(existingAccount.getEmail())) {
+            existingAccount.setEmail(account.getEmail());
+        }
+        if(!account.getPassword().equals(existingAccount.getPassword())) {
+            existingAccount.setPassword(account.getPassword());
+        }
+        accountRepository.save(existingAccount);
+
+    }
+
+    @Override
+    public void deleteAccount(Account account) {
+        accountRepository.delete(account);
     }
 
     private boolean emailExist(String email) {

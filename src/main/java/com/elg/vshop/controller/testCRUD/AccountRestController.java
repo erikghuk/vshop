@@ -13,62 +13,34 @@ import java.util.List;
 @RequestMapping("/api")
 @CrossOrigin("http://localhost:4200")
 public class AccountRestController {
-    private AccountRepository accountRepository;
-    private UserRepository userRepository;
+    private AccountService accountService;
 
     @Autowired
-    public AccountRestController(AccountRepository accountRepository, UserRepository userRepository) {
-        this.accountRepository = accountRepository;
-        this.userRepository = userRepository;
+    public AccountRestController(AccountService accountService) {
+        this.accountService = accountService;
     }
 
-    @GetMapping("/accounts")
-    public List<Account> getAllAccounts() {
-        return accountRepository.findAll();
+    @PostMapping("/account/reg")
+    public Account addAccount(@RequestBody Account account) {
+        if(account != null)
+            accountService.save(account);
+        else
+            throw new RuntimeException("No data for registration");
+        return account;
     }
 
-    @GetMapping("/users/{userId}/accounts")
-    public Account getAccountByUserId(@PathVariable int userId) {
-        if(!accountRepository.existsById(userId)) {
-            throw new RuntimeException("User not found!");
-        }
-
-        List<Account> accounts = accountRepository.findByUserId(userId);
-        if(accounts.size() > 0) {
-            return accounts.get(0);
-        } else {
-            throw new RuntimeException("Contact not found!");
-        }
-    }
-
-    @PostMapping(value = "/users/{userId}/accounts")
-    public Account addAccount(@PathVariable int userId,
-                                  @RequestBody Account account) {
-        return userRepository.findById(userId)
-                .map(user -> {
-                    account.setUser(user);
-                    return accountRepository.save(account);
-                }).orElseThrow(() -> new RuntimeException("User not found!"));
-    }
-
-    @PutMapping("/accounts/{accountId}")
+    @PutMapping("/account/{accountId}")
     public Account updateAccount(@PathVariable int accountId,
                                      @RequestBody Account accountUpdated) {
-        return accountRepository.findById(accountId)
-                .map(account -> {
-                    account.setEmail(accountUpdated.getEmail());
-                    account.setPassword(accountUpdated.getPassword());
-                    return accountRepository.save(account);
-                }).orElseThrow(() -> new RuntimeException("User not found!"));
+        accountService.updateAccount(accountId, accountUpdated);
+        return accountUpdated;
+
     }
 
-    @DeleteMapping("/accounts/{accountId}")
-    public String deleteAccount(@PathVariable int accountId) {
-        return accountRepository.findById(accountId)
-                .map(account -> {
-                    accountRepository.delete(account);
-                    return "Deleted Successfully!";
-                }).orElseThrow(() -> new RuntimeException("User not found!"));
+    @DeleteMapping("/account/del")
+    public void deleteAccount(@RequestBody Account account) {
+            accountService.deleteAccount(account);
+
     }
 
 

@@ -6,4 +6,8 @@ public interface AccountService {
     void save(Account user);
 
     Account findByEmail(String email);
+
+    void updateAccount(int id, Account account);
+
+    void deleteAccount(Account account);
 }

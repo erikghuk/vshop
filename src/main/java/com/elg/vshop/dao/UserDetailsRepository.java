@@ -11,4 +11,5 @@ import java.util.List;
 public interface UserDetailsRepository extends JpaRepository<UserDetails, Integer> {
     List<UserDetails> findByUserId(int userId);
 
+
 }

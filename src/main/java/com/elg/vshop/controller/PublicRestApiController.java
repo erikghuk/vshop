@@ -1,38 +1,33 @@
 package com.elg.vshop.controller;
 
 import com.elg.vshop.dao.AccountRepository;
+import com.elg.vshop.dao.RoleRepository;
 import com.elg.vshop.entity.user.Account;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 @RestController
-@RequestMapping("/api/public")
+@RequestMapping("/api")
 public class PublicRestApiController {
     private AccountRepository accountRepository;
+    private RoleRepository roleRepository;
 
     @Autowired
-    public PublicRestApiController(AccountRepository accountRepository) {
+    public PublicRestApiController(AccountRepository accountRepository, RoleRepository roleRepository) {
         this.accountRepository = accountRepository;
+        this.roleRepository = roleRepository;
     }
 
-    @GetMapping("/test1")
-    public String test1() {
-        return "TEST1";
-    }
-
-    @GetMapping("/test2")
-    public String test2() {
-        return "TEST2";
-    }
-
-
-    @GetMapping("/users")
-    public List<Account> allUsers() {
-        return this.accountRepository.findAll();
+    @GetMapping("/test")
+    public String allUsers() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Account account = accountRepository.findByEmail(auth.getName());
+        String roleName = roleRepository.findNameByEmail(account);
+        return "Hello " + account.getEmail() + ". You are a " + roleName;
     }
 
 

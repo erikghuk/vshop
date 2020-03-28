@@ -21,17 +21,6 @@ public class AccountSecurityDetailsSupport implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<>();
 
-        // Extract list of permissions (name)
-        for (String p : account.getPermissionList()) {
-            GrantedAuthority authority = new SimpleGrantedAuthority(p);
-            authorities.add(authority);
-        }
-        // Extract list of roles (ROLE_name)
-/*        for (String r : account.getRoleList()) {
-            GrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + r);
-            authorities.add(authority);
-        }*/
-
         for (Role role : account.getRoleSet()) {
             GrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + role.getName());
             authorities.add(authority);

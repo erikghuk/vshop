@@ -2,6 +2,7 @@ package com.elg.vshop.entity.user;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
@@ -27,20 +28,15 @@ public class Account {
     private String passwordConfirm;
 
     @Column(name = "active")
-    private boolean active;
+    private boolean active = true;
 
     @OneToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "utilisateur_id")
     private User user;
 
-    @Column(name = "permission")
-    private String permissions;
-
-
-    @Column(name = "user_role")
-    private String role;
-
-    @ManyToMany
+    @OneToMany(fetch=FetchType.EAGER, mappedBy = "account",
+            cascade = CascadeType.ALL)
+    @JsonManagedReference
     private Set<Role> roles;
 
     public Account() {
@@ -94,41 +90,11 @@ public class Account {
         this.passwordConfirm = passwordConfirm;
     }
 
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String roles) {
-        this.role = role;
-    }
-
     public Set<Role> getRoleSet() {
         if(roles.size() > 0) {
             return roles;
         } else
             return new HashSet<>();
-    }
-
-    public List<String> getRoleList() {
-        if(role.length() > 0) {
-            return Arrays.asList(role.split(","));
-        } else
-            return new ArrayList<>();
-    }
-
-    public List<String> getPermissionList() {
-        if(permissions.length() > 0) {
-            return Arrays.asList(permissions.split(","));
-        } else
-            return new ArrayList<>();
-    }
-
-    public String getPermissions() {
-        return permissions;
-    }
-
-    public void setPermissions(String permissions) {
-        this.permissions = permissions;
     }
 
     public Set<Role> getRoles() {
