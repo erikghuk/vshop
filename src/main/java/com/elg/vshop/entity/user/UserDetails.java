@@ -23,10 +23,6 @@ public class UserDetails {
     @JsonFormat(pattern="dd/MM/yyyy")
     private Date dob;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "ville_id")
-    private Ville ville;
-
     @OneToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "utilisateur_id")
     private User user;
@@ -64,14 +60,6 @@ public class UserDetails {
 
     public void setDob(Date dob) {
         this.dob = dob;
-    }
-
-    public Ville getVille() {
-        return ville;
-    }
-
-    public void setVille(Ville ville) {
-        this.ville = ville;
     }
 
     public User getUser() {

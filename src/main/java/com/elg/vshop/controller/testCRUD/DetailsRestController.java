@@ -1,4 +1,4 @@
-package com.elg.vshop.controller;
+package com.elg.vshop.controller.testCRUD;
 
 import com.elg.vshop.dao.UserDetailsRepository;
 import com.elg.vshop.dao.UserRepository;

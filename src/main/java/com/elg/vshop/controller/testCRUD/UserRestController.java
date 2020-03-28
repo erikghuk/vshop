@@ -1,4 +1,4 @@
-package com.elg.vshop.controller;
+package com.elg.vshop.controller.testCRUD;
 
 import com.elg.vshop.dao.UserRepository;
 import com.elg.vshop.entity.user.User;
@@ -12,8 +12,12 @@ import java.util.Optional;
 @RequestMapping("/api")
 @CrossOrigin("http://localhost:4200")
 public class UserRestController {
+    private final UserRepository userRepository;
+
     @Autowired
-    private UserRepository userRepository;
+    public UserRestController(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @GetMapping("/users")
     public List<User> getAllUsers() {
@@ -31,8 +35,8 @@ public class UserRestController {
     }
 
     @PostMapping("/users")
-    public User createUser(@RequestBody User student) {
-        return userRepository.save(student);
+    public User createUser(@RequestBody User user) {
+        return userRepository.save(user);
     }
 
     @PutMapping("/users/{id}")

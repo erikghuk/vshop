@@ -1,7 +1,6 @@
 package com.elg.vshop.entity.user;
 
 
-import com.elg.vshop.entity.Annonce;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.CreationTimestamp;
@@ -24,9 +23,6 @@ public class User {
     @JsonFormat(pattern="dd/MM/yyyy")
     private Date dateRegistration;
 
-    @OneToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, mappedBy = "user", fetch = FetchType.EAGER)
-    private Set<Annonce> annonces;
-
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
     private Account account;
 
@@ -42,14 +38,6 @@ public class User {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public Set<Annonce> getAnnonces() {
-        return annonces;
-    }
-
-    public void setAnnonces(Set<Annonce> annonces) {
-        this.annonces = annonces;
     }
 
     public Account getAccount() {

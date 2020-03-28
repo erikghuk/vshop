@@ -1,8 +1,9 @@
-package com.elg.vshop.controller;
+package com.elg.vshop.controller.testCRUD;
 
 import com.elg.vshop.dao.AccountRepository;
 import com.elg.vshop.dao.UserRepository;
 import com.elg.vshop.entity.user.Account;
+import com.elg.vshop.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,11 +13,14 @@ import java.util.List;
 @RequestMapping("/api")
 @CrossOrigin("http://localhost:4200")
 public class AccountRestController {
-    @Autowired
     private AccountRepository accountRepository;
+    private UserRepository userRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    public AccountRestController(AccountRepository accountRepository, UserRepository userRepository) {
+        this.accountRepository = accountRepository;
+        this.userRepository = userRepository;
+    }
 
     @GetMapping("/accounts")
     public List<Account> getAllAccounts() {

@@ -21,8 +21,6 @@ public class Marque {
     @JsonManagedReference
     private List<Model> models;
 
-    @OneToMany(mappedBy = "marques", fetch = FetchType.LAZY)
-    private List<Car> cars;
 
     public Marque() {
     }
@@ -49,13 +47,5 @@ public class Marque {
 
     public void setModels(List<Model> models) {
         this.models = models;
-    }
-
-    public List<Car> getCars() {
-        return cars;
-    }
-
-    public void setCars(List<Car> cars) {
-        this.cars = cars;
     }
 }
