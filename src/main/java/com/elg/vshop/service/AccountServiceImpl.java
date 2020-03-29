@@ -29,10 +29,6 @@ public class AccountServiceImpl implements AccountService {
     public void save(Account account) {
         if(!emailExist(account.getEmail())) {
             account.setPassword(bCryptPasswordEncoder.encode(account.getPassword()));
-            // It'a simple implementation. You can add a Roles drop-down on Create Account Page,
-            // populate it with all the roles u have in database. When user select 1 role,
-            // click submit, in UserServiceImp find that role in database instead of roleRepository.findAll
-
             accountRepository.save(account);
         } else
             throw new RuntimeException("Account with email " + account.getEmail() + " already exist");

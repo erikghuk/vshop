@@ -21,7 +21,7 @@ public class AccountSecurityDetailsSupport implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<>();
 
-        for (Role role : account.getRoleSet()) {
+        for (Role role : account.getRoles()) {
             GrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + role.getName());
             authorities.add(authority);
         }

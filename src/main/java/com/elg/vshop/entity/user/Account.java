@@ -90,15 +90,11 @@ public class Account {
         this.passwordConfirm = passwordConfirm;
     }
 
-    public Set<Role> getRoleSet() {
+    public Set<Role> getRoles() {
         if(roles.size() > 0) {
             return roles;
         } else
             return new HashSet<>();
-    }
-
-    public Set<Role> getRoles() {
-        return roles;
     }
 
     public void setRoles(Set<Role> roles) {
