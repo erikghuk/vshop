@@ -1,7 +1,6 @@
 package com.elg.vshop.entity.user;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import javax.persistence.*;
 import java.util.Set;
 
@@ -15,11 +14,10 @@ public class Role {
     @Column(name = "role_name")
     private String name;
 
-    @ManyToOne(fetch=FetchType.EAGER, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    @JoinColumn(name = "compte_id")
-    @JsonBackReference
-    private Account account;
-
+    @OneToMany(fetch=FetchType.EAGER, mappedBy = "role",
+            cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private Set<Account> accounts;
 
     public Role() {
     }
@@ -40,4 +38,11 @@ public class Role {
         this.name = name;
     }
 
+    public Set<Account> getAccounts() {
+        return accounts;
+    }
+
+    public void setAccounts(Set<Account> accounts) {
+        this.accounts = accounts;
+    }
 }

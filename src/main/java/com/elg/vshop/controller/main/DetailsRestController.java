@@ -1,4 +1,4 @@
-package com.elg.vshop.controller.testCRUD;
+package com.elg.vshop.controller.main;
 
 import com.elg.vshop.dao.UserDetailsRepository;
 import com.elg.vshop.dao.UserRepository;
@@ -6,17 +6,22 @@ import com.elg.vshop.entity.user.UserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api")
 @CrossOrigin("http://localhost:4200")
 public class DetailsRestController {
-    @Autowired
-    private UserDetailsRepository userDetailsRepository;
+    private final UserDetailsRepository userDetailsRepository;
+
+    private final UserRepository userRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    public DetailsRestController(UserDetailsRepository userDetailsRepository, UserRepository userRepository) {
+        this.userDetailsRepository = userDetailsRepository;
+        this.userRepository = userRepository;
+    }
 
     @GetMapping("/details")
     public List<UserDetails> getAllDetails() {
@@ -28,7 +33,6 @@ public class DetailsRestController {
         if(!userRepository.existsById(userId)) {
             throw new RuntimeException("User not found!");
         }
-
         List<UserDetails> userDetails = userDetailsRepository.findByUserId(userId);
         if(userDetails.size() > 0) {
             return userDetails.get(0);
@@ -39,7 +43,7 @@ public class DetailsRestController {
 
     @PostMapping(value = "/users/{userId}/details")
     public UserDetails addDetails(@PathVariable int userId,
-                                  @RequestBody UserDetails details) {
+                                  @Valid @RequestBody UserDetails details) {
         return userRepository.findById(userId)
                 .map(user -> {
                     details.setUser(user);
@@ -49,7 +53,7 @@ public class DetailsRestController {
 
     @PutMapping("/details/{detailsId}")
     public UserDetails updateDetails(@PathVariable int detailsId,
-                                     @RequestBody UserDetails detailsUpdated) {
+                                     @Valid @RequestBody UserDetails detailsUpdated) {
         return userDetailsRepository.findById(detailsId)
                 .map(details -> {
                     details.setFirstName(detailsUpdated.getFirstName());

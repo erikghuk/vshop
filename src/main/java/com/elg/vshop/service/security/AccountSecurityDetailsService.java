@@ -20,6 +20,10 @@ public class AccountSecurityDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
         Account account = accountRepository.findByEmail(s);
+        if(account == null) {
+            throw new UsernameNotFoundException("Le compte avec adresse email " + s + " n'existe pas");
+        }
         return new AccountSecurityDetailsSupport(account);
+
     }
 }

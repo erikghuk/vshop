@@ -20,11 +20,8 @@ public class AccountSecurityDetailsSupport implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<>();
-
-        for (Role role : account.getRoles()) {
-            GrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + role.getName());
-            authorities.add(authority);
-        }
+        GrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + account.getRole().getName());
+        authorities.add(authority);
 
         return authorities;
     }

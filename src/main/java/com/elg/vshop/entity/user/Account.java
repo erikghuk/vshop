@@ -1,12 +1,10 @@
 package com.elg.vshop.entity.user;
 
-
+import com.elg.vshop.validator.password.PasswordFormat;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-
 import javax.persistence.*;
-import javax.validation.constraints.Size;
-import java.util.*;
+import javax.validation.constraints.*;
 
 @Entity
 @Table(name = "compte", schema = "vshop_schema")
@@ -17,11 +15,16 @@ public class Account {
     @Column(name = "id")
     private int id;
 
-
     @Column(name = "email", nullable = false)
+    @Email
+    @NotEmpty(message = "Cette valeur ne doit pas être vide")
+    @NotNull(message = "Cette valeur ne doit pas être vide")
     private String email;
 
     @Column(name = "pass", nullable = false)
+    @NotEmpty(message = "Cette valeur ne doit pas être vide")
+    @Size(min = 6, message = "La taille minimum doit être 6 simbol")
+    @PasswordFormat
     private String password;
 
     @Transient
@@ -30,14 +33,14 @@ public class Account {
     @Column(name = "active")
     private boolean active = true;
 
-    @OneToOne(fetch = FetchType.EAGER, optional = false)
+    @OneToOne(fetch = FetchType.EAGER, optional = false, cascade = CascadeType.ALL)
     @JoinColumn(name = "utilisateur_id")
     private User user;
 
-    @OneToMany(fetch=FetchType.EAGER, mappedBy = "account",
-            cascade = CascadeType.ALL)
-    @JsonManagedReference
-    private Set<Role> roles;
+    @ManyToOne(fetch=FetchType.EAGER, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @JoinColumn(name = "role_id")
+    @JsonBackReference
+    private Role role;
 
     public Account() {
     }
@@ -90,14 +93,11 @@ public class Account {
         this.passwordConfirm = passwordConfirm;
     }
 
-    public Set<Role> getRoles() {
-        if(roles.size() > 0) {
-            return roles;
-        } else
-            return new HashSet<>();
+    public Role getRole() {
+        return role;
     }
 
-    public void setRoles(Set<Role> roles) {
-        this.roles = roles;
+    public void setRole(Role role) {
+        this.role = role;
     }
 }

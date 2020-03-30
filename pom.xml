@@ -28,6 +28,14 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-rest</artifactId>
 		</dependency>
+		<!-- password utils -->
+
+			<dependency>
+				<groupId>org.passay</groupId>
+				<artifactId>passay</artifactId>
+				<version>1.5.0</version>
+			</dependency>
+
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

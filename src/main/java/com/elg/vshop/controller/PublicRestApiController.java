@@ -26,8 +26,7 @@ public class PublicRestApiController {
     public String allUsers() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         Account account = accountRepository.findByEmail(auth.getName());
-        String roleName = roleRepository.findNameByEmail(account);
-        return "Hello " + account.getEmail() + ". You are a " + roleName;
+        return "Hello " + account.getEmail();
     }
 
 

@@ -1,13 +1,11 @@
-package com.elg.vshop.controller.testCRUD;
+package com.elg.vshop.controller.main;
 
-import com.elg.vshop.dao.AccountRepository;
-import com.elg.vshop.dao.UserRepository;
 import com.elg.vshop.entity.user.Account;
 import com.elg.vshop.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api")
@@ -21,9 +19,10 @@ public class AccountRestController {
     }
 
     @PostMapping("/account/reg")
-    public Account addAccount(@RequestBody Account account) {
-        if(account != null)
+    public Account addAccount(@Valid @RequestBody Account account) {
+        if(account != null) {
             accountService.save(account);
+        }
         else
             throw new RuntimeException("No data for registration");
         return account;
@@ -31,7 +30,7 @@ public class AccountRestController {
 
     @PutMapping("/account/{accountId}")
     public Account updateAccount(@PathVariable int accountId,
-                                     @RequestBody Account accountUpdated) {
+                                     @Valid @RequestBody Account accountUpdated) {
         accountService.updateAccount(accountId, accountUpdated);
         return accountUpdated;
 
