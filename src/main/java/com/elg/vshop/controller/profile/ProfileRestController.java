@@ -29,7 +29,7 @@ public class ProfileRestController {
         return "Hello " + account.getEmail();
     }
 
-    @GetMapping("/page2")
+    @GetMapping("/page1/test")
     public String profilePage2() {
         return "Profile Page 2";
     }
