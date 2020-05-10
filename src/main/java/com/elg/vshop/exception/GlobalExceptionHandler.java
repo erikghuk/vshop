@@ -1,12 +1,10 @@
 package com.elg.vshop.exception;
 
 import com.elg.vshop.error.AccountErrorResponse;
-import io.jsonwebtoken.JwtException;
 import javassist.NotFoundException;
 import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -73,13 +71,13 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler
-    public ResponseEntity<AccountErrorResponse> handleInvalidDataJwtAuthenticationExceptionException(InvalidDataException exception) {
+    public ResponseEntity<AccountErrorResponse> handleInvalidDataException(InvalidDataException exception) {
         AccountErrorResponse errorResponse = new AccountErrorResponse();
-        errorResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+        errorResponse.setStatus(HttpStatus.NOT_ACCEPTABLE.value());
         errorResponse.setMessage(exception.getMessage());
         errorResponse.setTimestamp(System.currentTimeMillis());
 
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_ACCEPTABLE);
     }
 
     @ExceptionHandler
@@ -122,8 +120,8 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.NO_CONTENT);
     }
 
-    @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity<AccountErrorResponse> handleAuthenticationException(AuthenticationException ex){
+    @ExceptionHandler
+    public ResponseEntity<AccountErrorResponse> handleJwtException(JwtAuthenticationException ex){
         AccountErrorResponse errorResponse = new AccountErrorResponse();
         errorResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
         errorResponse.setMessage(ex.getMessage());

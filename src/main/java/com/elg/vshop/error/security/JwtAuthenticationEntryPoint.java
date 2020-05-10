@@ -16,7 +16,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         httpServletResponse.setHeader("Access-Control-Allow-Origin", "http://localhost:4200");
         if (expired!=null){
             httpServletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED,expired);
-        } else{
+        } else {
             httpServletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED,"Invalid Login details");
         }
     }

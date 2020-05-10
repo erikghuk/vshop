@@ -28,7 +28,7 @@ public class UserInfo {
 
     @Column(name = "dob")
     @Past(message = "{dob.must.be.past}")
-    @JsonFormat(pattern="dd/MM/yyyy")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     private Date dob;
 
     @OneToOne(fetch = FetchType.EAGER, optional = false, cascade = CascadeType.ALL)

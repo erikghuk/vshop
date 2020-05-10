@@ -16,13 +16,14 @@ public class Account {
 
     @Column(name = "email", nullable = false)
     @NotNull(message = "{name.not.empty}")
-    @NotEmpty(message = "{name.not.empty}")
-    @Email
+    @NotEmpty(message = "Email ne doit pas être vide")
+    @Email(message = "{email.not.valid}")
     private String email;
 
     @Column(name = "pass", nullable = false)
     @Size(min = 6, message = "La taille  doit être min 6 simbol")
     @PasswordFormat
+    @NotNull(message = "{name.not.empty}")
     @NotEmpty(message = "{name.not.empty}")
     private String password;
 
@@ -32,7 +33,7 @@ public class Account {
     @Column(name = "active")
     private boolean active = true;
 
-    @OneToOne(fetch = FetchType.EAGER, optional = false, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "utilisateur_id")
     private User user;
 

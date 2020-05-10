@@ -21,7 +21,6 @@ public class User {
 
     @Column(name = "user_name")
     @NotNull(message = "{name.not.empty}")
-    @NotEmpty(message = "{name.not.empty}")
     @Pattern(regexp = "^[a-zA-Z0-9._-]{3,}$", message = "{username.not.valid}")
     private String userName;
 

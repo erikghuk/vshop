@@ -6,39 +6,43 @@ import com.elg.vshop.dao.UserRepository;
 import com.elg.vshop.entity.user.Account;
 import com.elg.vshop.entity.user.Role;
 import com.elg.vshop.entity.user.User;
+import com.elg.vshop.exception.InvalidDataException;
 import com.elg.vshop.exception.JwtAuthenticationException;
 import com.elg.vshop.exception.PasswordNotMatchException;
 import com.elg.vshop.exception.UserExistException;
 import com.elg.vshop.service.security.CurrentAuthenticatedUser;
+import com.elg.vshop.service.security.jwt.JwtTokenProvider;
+import com.elg.vshop.service.security.jwt.dto.AuthResponceDto;
+import com.elg.vshop.service.security.jwt.dto.MessageClassForJson;
+import com.elg.vshop.service.security.jwt.dto.PasswordUpdateDTO;
 import com.elg.vshop.service.security.jwt.dto.RegistratingUserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationServiceException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.security.auth.login.AccountNotFoundException;
-import java.util.List;
 
 @Service
 public class AccountServiceImpl implements AccountService {
-    private UserService userService;
     private AccountRepository accountRepository;
     private RoleRepository roleRepository;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     private UserRepository userRepository;
     private CurrentAuthenticatedUser authenticatedUser;
+    private JwtTokenProvider jwtTokenProvider;
 
     @Autowired
-    public AccountServiceImpl(UserService userService, AccountRepository accountRepository,
-                              RoleRepository roleRepository, BCryptPasswordEncoder bCryptPasswordEncoder, UserRepository userRepository, CurrentAuthenticatedUser authenticatedUser) {
-        this.userService = userService;
+    public AccountServiceImpl(AccountRepository accountRepository, RoleRepository roleRepository,
+                              BCryptPasswordEncoder bCryptPasswordEncoder, UserRepository userRepository,
+                              CurrentAuthenticatedUser authenticatedUser, JwtTokenProvider jwtTokenProvider) {
         this.accountRepository = accountRepository;
         this.roleRepository = roleRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.userRepository = userRepository;
         this.authenticatedUser = authenticatedUser;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
 
@@ -56,7 +60,7 @@ public class AccountServiceImpl implements AccountService {
     public void saveAccount(RegistratingUserDTO userDTO) throws AccountNotFoundException {
         Account account = new Account();
         if(userDTO == null) {
-            throw new AccountNotFoundException("Les données sont pas valides");
+            throw new InvalidDataException("Les données sont pas valides");
         }
 
         account.setEmail(userDTO.getEmail());
@@ -76,7 +80,7 @@ public class AccountServiceImpl implements AccountService {
 
                     accountRepository.save(account);
                 } else {
-                    throw new UserExistException("Pseudo " + account.getUser().getUserName() + " déjà existe");
+                    throw new UserExistException("Pseudo " + userDTO.getUserName() + " déjà existe");
                 }
             } else {
                 throw new PasswordNotMatchException("Les mots de pass ne sont pas identiques");
@@ -98,25 +102,73 @@ public class AccountServiceImpl implements AccountService {
 
 
     @Override
-    public void updateAccount(Account account) {
+    public ResponseEntity updateAccount(Account account) throws AccountNotFoundException {
+        if(account == null) {
+            throw new InvalidDataException("No data");
+        }
+        if(account.getPassword() == null || account.getEmail() == null) {
+            throw new InvalidDataException("No data");
+        }
+        String newToken = null;
         User currentUser = authenticatedUser.getUser();
         if(currentUser == null) {
             throw new JwtAuthenticationException("Unauthorized access");
         }
-        Account existingAccount = accountRepository.findByUser(currentUser);
-        if(existingAccount == null) {
-            accountRepository.save(account);
-        } else if(account != null) {
-            if (!account.getEmail().equals(existingAccount.getEmail())) {
+        Account existingAccount = currentUser.getAccount();
+
+        if(!account.getEmail().equals(existingAccount.getEmail())) {
+            if (bCryptPasswordEncoder.matches(account.getPassword(), existingAccount.getPassword())) {
                 existingAccount.setEmail(account.getEmail());
+                newToken = jwtTokenProvider.generateToken(existingAccount.getUser());
+                accountRepository.save(existingAccount);
             }
-            if (!bCryptPasswordEncoder.matches(account.getPassword(), existingAccount.getPassword())) {
-                existingAccount.setPassword(bCryptPasswordEncoder.encode(account.getPassword()));
-            }
-            accountRepository.save(existingAccount);
         } else {
-            throw new RuntimeException("{exception.nonParam}");
+            return new ResponseEntity<>("Vous n'avez pas changé votre adresse email", HttpStatus.OK);
         }
+        /*if (!bCryptPasswordEncoder.matches(account.getPassword(), existingAccount.getPassword())) {
+            existingAccount.setPassword(bCryptPasswordEncoder.encode(account.getPassword()));
+        }*/
+        return ResponseEntity.ok(new AuthResponceDto(currentUser.getId(), newToken, existingAccount.getUser().getUserName()));
+
+    }
+
+    @Override
+    public boolean checkPasword(String password) {
+        if(password == null) {
+            throw new InvalidDataException("There is No password");
+        }
+        Account existingAccount = authenticatedUser.getUser().getAccount();
+        return bCryptPasswordEncoder.matches(password, existingAccount.getPassword());
+    }
+
+    @Override
+    public ResponseEntity updatePass(PasswordUpdateDTO passwordUpdateDTO) {
+        User currentUser = authenticatedUser.getUser();
+        if(currentUser == null) {
+            throw new JwtAuthenticationException("Unauthorized access");
+        }
+        Account existingAccount = currentUser.getAccount();
+        if(passwordUpdateDTO == null) {
+            throw new InvalidDataException("No Data for updating Password");
+        }
+        if(passwordUpdateDTO.getOldPassword() == null) {
+            throw new InvalidDataException("No password for confirming updating Password");
+        }
+        if(passwordUpdateDTO.getNewPassword() == null || passwordUpdateDTO.getNewPasswordConfirm() == null) {
+            throw new InvalidDataException("No password for updating it");
+        }
+        if(checkPasword(passwordUpdateDTO.getOldPassword())) {
+            if(passwordUpdateDTO.getNewPassword().equals(passwordUpdateDTO.getNewPasswordConfirm())) {
+                existingAccount.setPassword(bCryptPasswordEncoder.encode(passwordUpdateDTO.getNewPassword()));
+                accountRepository.save(existingAccount);
+            }
+            else {
+                throw new PasswordNotMatchException("Les mots de pass ne sont pas identiques");
+            }
+        } else {
+            throw new InvalidDataException("Le mot de pass n'est' pas valid");
+        }
+        return ResponseEntity.ok(new MessageClassForJson("Password changed"));
     }
 
     private boolean emailExist(String email) {

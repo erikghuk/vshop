@@ -1,10 +1,12 @@
 package com.elg.vshop.controller.main;
 
 import com.elg.vshop.service.AccountService;
+import com.elg.vshop.service.RedisService;
 import com.elg.vshop.service.security.jwt.dto.AuthRequestDto;
 import com.elg.vshop.service.AuthService;
 import com.elg.vshop.service.security.jwt.dto.MessageClassForJson;
 import com.elg.vshop.service.security.jwt.dto.RegistratingUserDTO;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,5 +35,10 @@ public class AuthenticationRestController {
     @PostMapping("/login")
     public ResponseEntity<?> createAuthenticationToken(@Valid @RequestBody AuthRequestDto authRequestDto) throws Exception {
         return authService.authenticate(authRequestDto);
+    }
+
+    @PostMapping("/logout")
+    public void logoutHandler(@RequestHeader("Authorization") String logoutedBearerToken) {
+        authService.logOut(logoutedBearerToken);
     }
 }

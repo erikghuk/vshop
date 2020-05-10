@@ -15,6 +15,7 @@ public class Model {
     @Column(name = "id")
     private int id;
 
+
     @Column(name = "model_name")
     private String modelName;
 

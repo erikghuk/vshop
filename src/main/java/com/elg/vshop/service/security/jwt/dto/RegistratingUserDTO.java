@@ -22,7 +22,12 @@ public class RegistratingUserDTO {
     @Pattern(regexp = "^[a-zA-Z0-9._-]{3,}$", message = "{username.not.valid}")
     private String userName;
 
-    public RegistratingUserDTO(@NotNull(message = "{name.not.empty}") @NotEmpty(message = "{name.not.empty}") @Email String email, @Size(min = 6, message = "La taille  doit être min 6 simbol") @NotEmpty(message = "{name.not.empty}") String password, String passwordConfirm, @NotNull(message = "{name.not.empty}") @NotEmpty(message = "{name.not.empty}") @Pattern(regexp = "^[a-zA-Z0-9._-]{3,}$", message = "{username.not.valid}") String userName) {
+    public RegistratingUserDTO(
+            @NotNull(message = "{name.not.empty}") @NotEmpty(message = "{name.not.empty}") @Email String email,
+            @Size(min = 6, message = "La taille  doit être min 6 simbol") @NotEmpty(message = "{name.not.empty}") String password,
+            String passwordConfirm,
+            @NotNull(message = "{name.not.empty}") @NotEmpty(message = "{name.not.empty}") @Pattern(regexp = "^[a-zA-Z0-9._-]{3,}$", message = "{username.not.valid}") String userName
+    ) {
         this.email = email;
         this.password = password;
         this.passwordConfirm = passwordConfirm;

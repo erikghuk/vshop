@@ -6,6 +6,7 @@ import com.elg.vshop.dao.ModelRepository;
 import com.elg.vshop.entity.vehicule.Gearbox;
 import com.elg.vshop.entity.vehicule.Marque;
 import com.elg.vshop.entity.vehicule.Model;
+import com.elg.vshop.exception.InvalidDataException;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContext;
@@ -32,7 +33,11 @@ public class VehicleRestController {
 
     @GetMapping("/marques")
     List<Marque> getAllMarques() {
-        return marqueRepository.findAllByOrderByMarqueName();
+        List<Marque> marques = marqueRepository.findAllByOrderByMarqueName();
+        if(marques == null) {
+            throw new InvalidDataException("Pas de marques dans la BDD");
+        }
+        return marques ;
     }
 
     @GetMapping("/marques/{marqueId}")
@@ -49,11 +54,19 @@ public class VehicleRestController {
 
     @GetMapping("/models/{marqueId}")
     public List<Model> getModelsByMarque(@PathVariable int marqueId) {
-        return modelRepository.findAllByMarqueId(marqueId);
+        List<Model> models = modelRepository.findAllByMarqueId(marqueId);
+        if(models == null) {
+            throw new InvalidDataException("L'ID de marque n'est pas valide");
+        }
+        return models;
     }
 
     @GetMapping("/gearboxes")
     List<Gearbox> getAllBoxes() {
-        return boxRepository.findAll();
+        List<Gearbox> gearboxes = boxRepository.findAll();
+        if(gearboxes == null) {
+            throw new InvalidDataException("Pas de boxes dans la BDD");
+        }
+        return gearboxes;
     }
 }

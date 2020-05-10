@@ -13,18 +13,23 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
+import java.rmi.server.ServerNotActiveException;
 
 @Service
 public class AuthServiceImpl implements AuthService {
     private AuthenticationManager authenticationManager;
     private AccountRepository accountRepository;
     private JwtTokenProvider jwtTokenProvider;
+    private RedisService redisService;
 
     @Autowired
-    public AuthServiceImpl(AccountRepository accountRepository, JwtTokenProvider jwtTokenProvider, AuthenticationManager authenticationManager) {
+    public AuthServiceImpl(AccountRepository accountRepository, JwtTokenProvider jwtTokenProvider, AuthenticationManager authenticationManager, RedisService redisService) {
         this.accountRepository = accountRepository;
         this.jwtTokenProvider = jwtTokenProvider;
         this.authenticationManager = authenticationManager;
+        this.redisService = redisService;
     }
 
     @Override
@@ -47,5 +52,13 @@ public class AuthServiceImpl implements AuthService {
             throw new Exception("Email ou mot de pass ne sont pas valide", e);
         }
 
+    }
+
+    @Override
+    public void logOut(String token) {
+        if (StringUtils.hasText(token) && token.startsWith("Bearer_")) {
+            String logoutedToken =  token.substring(7);
+            redisService.sadd(logoutedToken, "BlackListed_TOKEN");
+        }
     }
 }

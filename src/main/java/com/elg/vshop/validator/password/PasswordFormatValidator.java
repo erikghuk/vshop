@@ -1,12 +1,14 @@
 package com.elg.vshop.validator.password;
 
+import com.elg.vshop.service.security.jwt.dto.MessageClassForJson;
 import org.passay.*;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.URL;
+import java.util.*;
 
 public class PasswordFormatValidator implements ConstraintValidator<PasswordFormat, String> {
     @Override
@@ -16,7 +18,17 @@ public class PasswordFormatValidator implements ConstraintValidator<PasswordForm
 
     @Override
     public boolean isValid(String password, ConstraintValidatorContext context) {
-        PasswordValidator validator = new PasswordValidator(Arrays.asList(
+        URL resource = this.getClass().getClassLoader().getResource("messages.properties");
+        Properties properties = new Properties();
+        if (resource != null) {
+            try {
+                properties.load(new FileInputStream(resource.getPath()));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        MessageResolver resolver = new PropertiesMessageResolver(properties);
+        PasswordValidator validator = new PasswordValidator(resolver, Arrays.asList(
                 // at least one upper-case character
                 new CharacterRule(EnglishCharacterData.UpperCase, 1),
 
@@ -33,14 +45,16 @@ public class PasswordFormatValidator implements ConstraintValidator<PasswordForm
                 new WhitespaceRule()
 
         ));
+
+
+
         RuleResult result = validator.validate(new PasswordData(password));
         if (result.isValid()) {
             return true;
         }
         List<String> messages = validator.getMessages(result);
 
-        String messageTemplate = messages.stream()
-                .collect(Collectors.joining(","));
+        String messageTemplate = String.join(", ", messages);
         context.buildConstraintViolationWithTemplate(messageTemplate)
                 .addConstraintViolation()
                 .disableDefaultConstraintViolation();

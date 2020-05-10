@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class CurrentAuthenticatedUser {
-    private Integer userId;
     private String email;
     private User user;
     private UserRepository userRepository;
@@ -44,6 +43,7 @@ public class CurrentAuthenticatedUser {
     }
 
     public String getEmail() {
+        getFromRepo();
         return email;
     }
 

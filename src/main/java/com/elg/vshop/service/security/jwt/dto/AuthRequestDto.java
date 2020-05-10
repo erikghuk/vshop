@@ -8,12 +8,10 @@ import javax.validation.constraints.NotNull;
 
 public class AuthRequestDto {
     @NotNull(message = "{name.not.empty}")
-    @NotEmpty(message = "{name.not.empty}")
     @Email
     private String email;
 
     @NotNull(message = "{name.not.empty}")
-    @NotEmpty(message = "{name.not.empty}")
     private String password;
 
     public AuthRequestDto(String email, String password) {

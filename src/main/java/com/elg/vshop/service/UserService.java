@@ -5,4 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UserService {
     User getUserById(int id);
+
+    void updateUser(User user);
+
+    void deleteUser();
 }
