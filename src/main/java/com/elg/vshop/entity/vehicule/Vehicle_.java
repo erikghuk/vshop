@@ -13,6 +13,7 @@ public class Vehicle_ {
 
     public static volatile SingularAttribute<Vehicle, Model> model;
     public static volatile SingularAttribute<Vehicle, Gearbox> gearbox;
+    public static volatile SingularAttribute<Vehicle, Carburant> carburant;
     public static volatile SingularAttribute<Vehicle, Integer> km;
     public static volatile SingularAttribute<Vehicle, Price> price;
     public static volatile SingularAttribute<Vehicle, Year> year;

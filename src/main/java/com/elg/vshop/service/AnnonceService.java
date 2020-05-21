@@ -6,13 +6,14 @@ import com.elg.vshop.exception.AnnoncesNotFoundException;
 import javassist.NotFoundException;
 
 import java.util.List;
+import java.util.Set;
 
 public interface AnnonceService {
     void saveAnnonce(Annonce annonce);
 
     void updateAnnonce(int id, Annonce annonce) throws NotFoundException;
 
-    List<Annonce> findAnnoncesByUserId() throws NotFoundException;
+    Set<Annonce> findAnnoncesByUserId() throws NotFoundException;
 
     List<Annonce> findByCriteria(AnnonceSearch annonceSearch);
 

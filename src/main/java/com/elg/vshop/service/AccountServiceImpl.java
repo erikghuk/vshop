@@ -49,7 +49,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public Account findAccountByUserId() {
         User user = authenticatedUser.getUser();
-        if(user == null) {
+        if (user == null) {
             throw new JwtAuthenticationException("Unauthorized access");
         }
         return accountRepository.findByUser(user);
@@ -59,7 +59,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public void saveAccount(RegistratingUserDTO userDTO) throws AccountNotFoundException {
         Account account = new Account();
-        if(userDTO == null) {
+        if (userDTO == null) {
             throw new InvalidDataException("Les données sont pas valides");
         }
 
@@ -67,9 +67,9 @@ public class AccountServiceImpl implements AccountService {
         account.setPassword(userDTO.getPassword());
         account.setPasswordConfirm(userDTO.getPasswordConfirm());
 
-        if(!emailExist(account.getEmail())) {
-            if(account.getPassword().equals(account.getPasswordConfirm())) {
-                if(!userNameExist(userDTO.getUserName())) {
+        if (!emailExist(account.getEmail())) {
+            if (account.getPassword().equals(account.getPasswordConfirm())) {
+                if (!userNameExist(userDTO.getUserName())) {
                     account.setPassword(bCryptPasswordEncoder.encode(account.getPassword()));
                     Role role = roleRepository.findByName("USER");
                     account.setRole(role);
@@ -103,20 +103,20 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public ResponseEntity updateAccount(Account account) throws AccountNotFoundException {
-        if(account == null) {
+        if (account == null) {
             throw new InvalidDataException("No data");
         }
-        if(account.getPassword() == null || account.getEmail() == null) {
+        if (account.getPassword() == null || account.getEmail() == null) {
             throw new InvalidDataException("No data");
         }
         String newToken = null;
         User currentUser = authenticatedUser.getUser();
-        if(currentUser == null) {
+        if (currentUser == null) {
             throw new JwtAuthenticationException("Unauthorized access");
         }
         Account existingAccount = currentUser.getAccount();
 
-        if(!account.getEmail().equals(existingAccount.getEmail())) {
+        if (!account.getEmail().equals(existingAccount.getEmail())) {
             if (bCryptPasswordEncoder.matches(account.getPassword(), existingAccount.getPassword())) {
                 existingAccount.setEmail(account.getEmail());
                 newToken = jwtTokenProvider.generateToken(existingAccount.getUser());
@@ -128,13 +128,13 @@ public class AccountServiceImpl implements AccountService {
         /*if (!bCryptPasswordEncoder.matches(account.getPassword(), existingAccount.getPassword())) {
             existingAccount.setPassword(bCryptPasswordEncoder.encode(account.getPassword()));
         }*/
-        return ResponseEntity.ok(new AuthResponceDto(currentUser.getId(), newToken, existingAccount.getUser().getUserName()));
+        return ResponseEntity.ok(new AuthResponceDto(newToken, existingAccount.getRole().getName()));
 
     }
 
     @Override
     public boolean checkPasword(String password) {
-        if(password == null) {
+        if (password == null) {
             throw new InvalidDataException("There is No password");
         }
         Account existingAccount = authenticatedUser.getUser().getAccount();
@@ -144,25 +144,24 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public ResponseEntity updatePass(PasswordUpdateDTO passwordUpdateDTO) {
         User currentUser = authenticatedUser.getUser();
-        if(currentUser == null) {
+        if (currentUser == null) {
             throw new JwtAuthenticationException("Unauthorized access");
         }
         Account existingAccount = currentUser.getAccount();
-        if(passwordUpdateDTO == null) {
+        if (passwordUpdateDTO == null) {
             throw new InvalidDataException("No Data for updating Password");
         }
-        if(passwordUpdateDTO.getOldPassword() == null) {
+        if (passwordUpdateDTO.getOldPassword() == null) {
             throw new InvalidDataException("No password for confirming updating Password");
         }
-        if(passwordUpdateDTO.getNewPassword() == null || passwordUpdateDTO.getNewPasswordConfirm() == null) {
+        if (passwordUpdateDTO.getNewPassword() == null || passwordUpdateDTO.getNewPasswordConfirm() == null) {
             throw new InvalidDataException("No password for updating it");
         }
-        if(checkPasword(passwordUpdateDTO.getOldPassword())) {
-            if(passwordUpdateDTO.getNewPassword().equals(passwordUpdateDTO.getNewPasswordConfirm())) {
+        if (checkPasword(passwordUpdateDTO.getOldPassword())) {
+            if (passwordUpdateDTO.getNewPassword().equals(passwordUpdateDTO.getNewPasswordConfirm())) {
                 existingAccount.setPassword(bCryptPasswordEncoder.encode(passwordUpdateDTO.getNewPassword()));
                 accountRepository.save(existingAccount);
-            }
-            else {
+            } else {
                 throw new PasswordNotMatchException("Les mots de pass ne sont pas identiques");
             }
         } else {

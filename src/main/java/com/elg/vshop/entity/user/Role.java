@@ -14,7 +14,7 @@ public class Role {
     @Column(name = "role_name")
     private String name;
 
-    @OneToMany(fetch=FetchType.EAGER, mappedBy = "role",
+    @OneToMany(fetch=FetchType.LAZY, mappedBy = "role",
             cascade = CascadeType.ALL)
     @JsonManagedReference
     private Set<Account> accounts;

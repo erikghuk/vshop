@@ -35,6 +35,11 @@ public class Vehicle {
     @NotNull(message = "{name.not.empty}")
     private Price price;
 
+    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH},
+            fetch = FetchType.EAGER)
+    @JoinColumn(name = "carb_id")
+    private Carburant carburant;
+
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "year_id")
     @NotNull(message = "{name.not.empty}")
@@ -106,5 +111,13 @@ public class Vehicle {
 
     public void setYear(Year year) {
         this.year = year;
+    }
+
+    public Carburant getCarburant() {
+        return carburant;
+    }
+
+    public void setCarburant(Carburant carburant) {
+        this.carburant = carburant;
     }
 }

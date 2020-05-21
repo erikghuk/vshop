@@ -2,12 +2,14 @@ package com.elg.vshop.entity.user;
 
 import com.elg.vshop.validator.password.PasswordFormat;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import javax.persistence.*;
 import javax.validation.constraints.*;
 
 @Entity
 @Table(name = "compte", schema = "vshop_schema")
-//@JsonIgnoreProperties("user")
+@JsonIgnoreProperties("user")
 public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -100,4 +102,6 @@ public class Account {
     public void setRole(Role role) {
         this.role = role;
     }
+
+
 }

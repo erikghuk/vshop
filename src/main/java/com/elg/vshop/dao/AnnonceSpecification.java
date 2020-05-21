@@ -22,12 +22,11 @@ public class AnnonceSpecification implements Specification<Annonce> {
         Path<Marque> marquePath = modelPath.get(Model_.marque);
         Path<Price> pricePath = vehiclePath.get(Vehicle_.price);
         Path<Gearbox> gearboxPath = vehiclePath.get(Vehicle_.gearbox);
+        Path<Carburant> carburantPath = vehiclePath.get(Vehicle_.carburant);
         Path<Integer> kilometrage = vehiclePath.get(Vehicle_.km);
         Path<Year> yearPath = vehiclePath.get(Vehicle_.year);
 
-
         List<Predicate> predicates = new ArrayList<>();
-
         // Marque et Model
         if(criteria.getModel() != null && checkForString(criteria.getModel().getModelName())) {
             predicates.add(
@@ -38,18 +37,23 @@ public class AnnonceSpecification implements Specification<Annonce> {
                     criteriaBuilder.equal(marquePath.get("marqueName"), criteria.getMarque().getMarqueName())
             );
         }
-
         // Price
         if(criteria.getPriceStart() !=null && criteria.getPriceEnd() != null) {
             predicates.add(
                     criteriaBuilder.between(pricePath.get("amount"), criteria.getPriceStart().getAmount(), criteria.getPriceEnd().getAmount())
             );
         }
-
         // Gearbox
         if(criteria.getGearbox() != null) {
             predicates.add(
                     criteriaBuilder.equal(gearboxPath.get("boxName"), criteria.getGearbox().getBoxName())
+            );
+        }
+
+        // Carburant
+        if(criteria.getCarburant() != null) {
+            predicates.add(
+                    criteriaBuilder.equal(carburantPath.get("typeOfCarburant"), criteria.getCarburant().getTypeOfCarburant())
             );
         }
 

@@ -44,10 +44,11 @@ public class AuthServiceImpl implements AuthService {
                 throw new UsernameNotFoundException("Account n'existe pas");
             }
             String token = jwtTokenProvider.generateToken(account.getUser());
-            return ResponseEntity.ok(new AuthResponceDto(account.getUser().getId(), token, account.getUser().getUserName()));
+
+            return ResponseEntity.ok(new AuthResponceDto(token, account.getRole().getName()));
 
         } catch (DisabledException e) {
-            throw new Exception("USER_DISABLED", e);
+            throw new Exception("Votre compte est blocké.", e);
         } catch (BadCredentialsException e) {
             throw new Exception("Email ou mot de pass ne sont pas valide", e);
         }

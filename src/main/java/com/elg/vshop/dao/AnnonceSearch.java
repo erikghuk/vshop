@@ -16,6 +16,7 @@ public class AnnonceSearch {
     private Price priceEnd;
 
     private Gearbox gearbox;
+    private Carburant carburant;
 
 
     @Min(value = 0, message = "${number.min.value}")
@@ -111,5 +112,13 @@ public class AnnonceSearch {
 
     public void setKmEnd(Integer kmEnd) {
         this.kmEnd = kmEnd;
+    }
+
+    public Carburant getCarburant() {
+        return carburant;
+    }
+
+    public void setCarburant(Carburant carburant) {
+        this.carburant = carburant;
     }
 }

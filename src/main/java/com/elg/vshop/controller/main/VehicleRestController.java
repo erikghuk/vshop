@@ -1,16 +1,16 @@
 package com.elg.vshop.controller.main;
 
+import com.elg.vshop.dao.CarburantRepository;
 import com.elg.vshop.dao.GearboxRepository;
 import com.elg.vshop.dao.MarqueRepository;
 import com.elg.vshop.dao.ModelRepository;
+import com.elg.vshop.entity.vehicule.Carburant;
 import com.elg.vshop.entity.vehicule.Gearbox;
 import com.elg.vshop.entity.vehicule.Marque;
 import com.elg.vshop.entity.vehicule.Model;
 import com.elg.vshop.exception.InvalidDataException;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,12 +23,14 @@ public class VehicleRestController {
     private MarqueRepository marqueRepository;
     private ModelRepository modelRepository;
     private GearboxRepository boxRepository;
+    private CarburantRepository carbRepository;
 
     @Autowired
-    public VehicleRestController(MarqueRepository marqueRepository, ModelRepository modelRepository, GearboxRepository boxRepository) {
+    public VehicleRestController(MarqueRepository marqueRepository, ModelRepository modelRepository, GearboxRepository boxRepository, CarburantRepository carbRepository) {
         this.marqueRepository = marqueRepository;
         this.modelRepository = modelRepository;
         this.boxRepository = boxRepository;
+        this.carbRepository = carbRepository;
     }
 
     @GetMapping("/marques")
@@ -68,5 +70,14 @@ public class VehicleRestController {
             throw new InvalidDataException("Pas de boxes dans la BDD");
         }
         return gearboxes;
+    }
+
+    @GetMapping("/carbs")
+    List<Carburant> getAllCarbs() {
+        List<Carburant> carbs = carbRepository.findAll();
+        if(carbs == null) {
+            throw new InvalidDataException("Pas de carburant dans la BDD");
+        }
+        return carbs;
     }
 }

@@ -37,12 +37,12 @@ public class Annonce {
 
     @Column(name = "date_d_annonce")
     @CreationTimestamp
-    @JsonFormat(pattern="dd/MM/yyyy")
+    @JsonFormat(pattern="dd/MM/yyyy HH:mm:ss")
     private Date creationDate;
 
     @Column(name = "dernier_msj")
     @UpdateTimestamp
-    @JsonFormat(pattern="dd/MM/yyyy")
+    @JsonFormat(pattern="dd/MM/yyyy HH:mm:ss")
     private Date modifDate;
 
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})

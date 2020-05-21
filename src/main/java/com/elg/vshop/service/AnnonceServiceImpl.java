@@ -3,6 +3,7 @@ package com.elg.vshop.service;
 import com.elg.vshop.dao.*;
 import com.elg.vshop.entity.Annonce;
 import com.elg.vshop.entity.user.User;
+import com.elg.vshop.entity.vehicule.Carburant;
 import com.elg.vshop.entity.vehicule.Gearbox;
 import com.elg.vshop.entity.vehicule.Model;
 import com.elg.vshop.exception.AnnoncesNotFoundException;
@@ -11,12 +12,13 @@ import com.elg.vshop.exception.JwtAuthenticationException;
 import com.elg.vshop.service.security.CurrentAuthenticatedUser;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class AnnonceServiceImpl implements AnnonceService{
@@ -25,15 +27,17 @@ public class AnnonceServiceImpl implements AnnonceService{
     private UserService userService;
     private ModelRepository modelRepository;
     private GearboxRepository gearboxRepository;
+    private CarburantRepository carburantRepository;
     private CurrentAuthenticatedUser authenticatedUser;
 
     @Autowired
     public AnnonceServiceImpl(AnnonceRepository annonceRepository, UserService userService,
-                              ModelRepository modelRepository, GearboxRepository gearboxRepository, CurrentAuthenticatedUser authenticatedUser) {
+                              ModelRepository modelRepository, GearboxRepository gearboxRepository, CarburantRepository carburantRepository, CurrentAuthenticatedUser authenticatedUser) {
         this.annonceRepository = annonceRepository;
         this.userService = userService;
         this.modelRepository = modelRepository;
         this.gearboxRepository = gearboxRepository;
+        this.carburantRepository = carburantRepository;
         this.authenticatedUser = authenticatedUser;
     }
 
@@ -59,11 +63,17 @@ public class AnnonceServiceImpl implements AnnonceService{
 
 
         Gearbox newGearBox = annonce.getVehicle().getGearbox();
-
         if(newGearBox != null) {
             Gearbox existingGearbox = gearboxRepository.findByBoxName(newGearBox.getBoxName());
 
             annonce.getVehicle().setGearbox(existingGearbox);
+        }
+
+        Carburant carburant = annonce.getVehicle().getCarburant();
+        if(carburant != null) {
+            Carburant existingCarburant = carburantRepository.findByTypeOfCarburant(carburant.getTypeOfCarburant());
+
+            annonce.getVehicle().setCarburant(existingCarburant);
         }
 
         annonce.getVehicle().setModel(existingModel);
@@ -72,7 +82,6 @@ public class AnnonceServiceImpl implements AnnonceService{
 
     @Override
     public void updateAnnonce(int annonceId, Annonce annonce) throws NotFoundException {
-
         Optional<Annonce> result = annonceRepository.findById(annonceId);
         Annonce existingAnnonce;
         if(result.isPresent()) {
@@ -80,8 +89,6 @@ public class AnnonceServiceImpl implements AnnonceService{
         } else {
             throw new AnnoncesNotFoundException("Annonce not found");
         }
-
-
         if (annonce.getDescription() != null && !annonce.getDescription().equals(existingAnnonce.getDescription())) {
             existingAnnonce.setDescription(annonce.getDescription());
             annonceRepository.save(existingAnnonce);
@@ -109,12 +116,12 @@ public class AnnonceServiceImpl implements AnnonceService{
 
 
     @Override
-    public List<Annonce> findAnnoncesByUserId() throws NotFoundException {
+    public Set<Annonce> findAnnoncesByUserId() throws NotFoundException {
         Integer userId = authenticatedUser.getUserId();
         if(userId == 0) {
             throw new JwtAuthenticationException("Unauthorized access");
         }
-        List<Annonce> annoncesList = annonceRepository.findAllByUserId(userId);
+        Set<Annonce> annoncesList = annonceRepository.findAllByUserId(userId);
         if(annoncesList == null || annoncesList.size() == 0) {
             throw new AnnoncesNotFoundException("Aucune annonce est trouvé");
         }
@@ -124,7 +131,10 @@ public class AnnonceServiceImpl implements AnnonceService{
     @Override
     public List<Annonce> findByCriteria(AnnonceSearch annonceSearch) {
         Specification<Annonce> spec = new AnnonceSpecification(annonceSearch);
-        return annonceRepository.findAll(spec);
+        List<Annonce> annonceList = annonceRepository.findAll(spec);
+
+        annonceList.removeIf(annonce -> !annonce.getUser().getAccount().isActive());
+        return annonceList;
     }
 
 
@@ -177,6 +187,8 @@ public class AnnonceServiceImpl implements AnnonceService{
         if(first10annonces == null) {
             throw new AnnoncesNotFoundException("Annonce n'existe pas");
         }
+
+        first10annonces.removeIf(annonce -> !annonce.getUser().getAccount().isActive());
         return first10annonces;
     }
 }

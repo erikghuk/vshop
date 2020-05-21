@@ -1,24 +1,14 @@
 package com.elg.vshop.service.security.jwt.dto;
+import com.elg.vshop.entity.user.Role;
 
-import java.util.Date;
 
 public class AuthResponceDto {
-    private int id;
     private String jwtToken;
-    private String userName;
+    private String roleName;
 
-    public AuthResponceDto(int id, String jwtToken, String userName) {
-        this.id = id;
+    public AuthResponceDto(String jwtToken, String roleName) {
         this.jwtToken = jwtToken;
-        this.userName = userName;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
+        this.roleName = roleName;
     }
 
     public String getJwtToken() {
@@ -29,11 +19,11 @@ public class AuthResponceDto {
         this.jwtToken = jwtToken;
     }
 
-    public String getUserName() {
-        return userName;
+    public String getRoleName() {
+        return roleName;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
     }
 }

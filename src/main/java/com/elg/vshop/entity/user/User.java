@@ -12,7 +12,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "utilisateur", schema = "vshop_schema")
-@JsonIgnoreProperties({"account", "annonces"})
+@JsonIgnoreProperties({"annonces"})
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

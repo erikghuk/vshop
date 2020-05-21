@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/annonces")
@@ -33,7 +34,7 @@ public class AnnonceRestController {
     }
 
     @GetMapping("/sec/u/all")
-    public List<Annonce> getAnnoncesByUserId() throws NotFoundException {
+    public Set<Annonce> getAnnoncesByUserId() throws NotFoundException {
         return annonceService.findAnnoncesByUserId();
     }
 
