@@ -10,9 +10,21 @@ public class MVCConfig implements WebMvcConfigurer {
     @Value("${app.upload.dir}")
     private String uploadPath;
 
+    private static final String[] CLASSPATH_RESOURCE_LOCATIONS = {
+            "classpath:/META-INF/resources/", "classpath:/resources/",
+            "classpath:/static/"};
+
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/**")
+                .addResourceLocations(CLASSPATH_RESOURCE_LOCATIONS);
         registry.addResourceHandler("/img/**")
                 .addResourceLocations("file:/" + System.getProperty("user.dir") + uploadPath + "/");
     }
+
+    /*@Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/img/**")
+                .addResourceLocations("file:/" + System.getProperty("user.dir") + uploadPath + "/");
+    }*/
 }
