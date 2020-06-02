@@ -15,9 +15,6 @@ public class MVCConfig implements WebMvcConfigurer {
     @Value("${app.upload.dir}")
     private String uploadPath;
 
-    private static final String[] CLASSPATH_RESOURCE_LOCATIONS = {
-            "classpath:/resources/",
-            "classpath:/static/"};
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
@@ -26,8 +23,7 @@ public class MVCConfig implements WebMvcConfigurer {
                 .resourceChain(true)
                 .addResolver(new PathResourceResolver() {
                     @Override
-                    protected Resource getResource(String resourcePath,
-                                                   Resource location) throws IOException {
+                    protected Resource getResource(String resourcePath, Resource location) throws IOException {
                         Resource requestedResource = location.createRelative(resourcePath);
                         return requestedResource.exists() && requestedResource.isReadable() ? requestedResource
                                 : new ClassPathResource("/static/index.html");
